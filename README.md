@@ -1,12 +1,18 @@
 # Sprint 1: TypeScript CSV
 
-### Task C: Proposing Enhancement
+### Task B: Proposing Enhancement
 
 - #### Step 1: Brainstorm on your own.
+    1. Functionality: The CSV parser should understand how to deal with and not split up data which is in quotes
+    2. Functionality: The CSV parser should be told whether or not they are column headers and deal with that accordingly
+    3. Extensibility: There should be some type validation mechanism to check if the caller's csv data has the types that the caller desires. 
+    4. Extensibility: The caller should be able to recieve some type of error handling feedback if their csv data is not in the proper format/types that they desire
+    5. Extensibility: The caller should be able to recieve back their csv data in whatever format that they individually desire
+    6. Extensibility: The caller should be able to specify whatever their delimiter is and shouldn't be limited to only commas
 
 - #### Step 2: Use an LLM to help expand your perspective.
 
-- #### Step 3: use an LLM to help expand your perspective.
+- #### Step 3: Propose enhancements in your project README file.
 
     Include a list of the top 4 enhancements or edge cases you think are most valuable to explore in the next week’s sprint. Label them clearly by category (extensibility vs. functionality), and include whether they came from you, the LLM, or both. Describe these using the User Story format—see below for a definition. 
 
