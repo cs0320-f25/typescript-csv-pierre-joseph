@@ -3,6 +3,7 @@ import * as path from "path";
 
 const PEOPLE_CSV_PATH = path.join(__dirname, "../data/people.csv");
 const PLAYERS_CSV_PATH = path.join(__dirname, "../data/basketballplayers.csv");
+const EMPTY_CSV_PATH = path.join(__dirname, "../data/empty.csv");
 
 test("parseCSV yields arrays", async () => {
   const results = await parseCSV(PEOPLE_CSV_PATH)
@@ -22,7 +23,7 @@ test("parseCSV yields only arrays", async () => {
   }
 });
 
-test("starting parseCSV currently fails with basketball player edge cases", async () => {
+test("parseCSV on normal cases", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   
   expect(playerResults).toHaveLength(11);
@@ -30,12 +31,34 @@ test("starting parseCSV currently fails with basketball player edge cases", asyn
   expect(playerResults[1]).toEqual(["Derrick White", "9", "Colorado", "derrickwhite@yahoo.com"]); 
   expect(playerResults[2]).toEqual(["Jaylen Brown", "7", "California", "brown@gmail.com"]);
   expect(playerResults[7]).toEqual(["Earvin \"Magic\" Johnson", "32", "Michigan", "magic@gmail.com"]); // double quotes in name, works
-  expect(playerResults[4]).toEqual(["LeBron", "23", "Ohio", "notavalidemailbron"]); // invalid email, should ideally error with Zod
-  expect(playerResults[6]).toEqual(["Jayson Tatum", "zero", "St. Louis", "jaysontatum@gmail.com"]); // number as word, should ideally error with Zod
+});
 
+test("parseCSV with comma", async () => {
+  const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[3]).toEqual(["Curry", "30", "Akron, Ohio", "stephcurry@gmail.com"]); // comma in place of birth, fails
+});
+
+test("parseCSV when making num a string", async () => {
+  const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[5]).toEqual(["Jordan", "23", "North Carolina", "micheal_jordan@yahoo.com"]); // number as string, fails
-  expect(playerResults[8]).toEqual(["easymoneysniper", "35", "D.C", "kd@gmail.com"]); // name in quotes, fails
+});
+
+test("parseCSV when putting name in string", async () => {
+  const playerResults = await parseCSV(PLAYERS_CSV_PATH)
+  expect(playerResults[8]).toEqual(["easymoneysniper", "35", "D.C.", "kd@gmail.com"]); // name in quotes, fails
+});
+
+test("parseCSV with missing last value", async () => {
+  const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[9]).toEqual(["klay", "11", "L.A.", ""]); // row missing email, fails
+});
+
+test("parseCSV with extra last value", async () => {
+  const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[9]).toEqual(["klay", "11", "L.A.", "klay@gmail.com"]); // row has extra email, fails
+});
+
+test("parseCSV with empty file", async () => {
+  const noResults = await parseCSV(EMPTY_CSV_PATH)
+  expect(noResults).toHaveLength(0);
 });
