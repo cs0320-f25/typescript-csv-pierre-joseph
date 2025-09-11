@@ -1,5 +1,11 @@
 import * as fs from "fs";
 import * as readline from "readline";
+import { z, ZodType } from "zod";
+
+interface SchemaError {
+  error: "rowSchemaError"
+  row: string 
+}
 
 /**
  * This is a JSDoc comment. Similar to JavaDoc, it documents a public-facing
@@ -13,8 +19,11 @@ import * as readline from "readline";
  * 
  * @param path The path to the file being loaded.
  * @returns a "promise" to produce a 2-d array of cell values
+ * 
+ * The function accepts a Zod Schema defining the necessary structure
+ * of a CSV row
  */
-export async function parseCSV(path: string): Promise<string[][]> {
+export async function parseCSV<T>(path: string, schema: ZodType<T> | undefined): Promise<(T | string[])[]> {
   // This initial block of code reads from a file in Node.js. The "rl"
   // value can be iterated over in a "for" loop. 
   const fileStream = fs.createReadStream(path);
@@ -30,8 +39,18 @@ export async function parseCSV(path: string): Promise<string[][]> {
   // We need to force TypeScript to _wait_ for a row before moving on. 
   // More on this in class soon!
   for await (const line of rl) {
-    const values = line.split(",").map((v) => v.trim());
-    result.push(values)
+    const cur_line = line.split(",").map((v) => v.trim());
+
+    // If a schema was provided, validate the current line against it.
+    if (schema) {
+      const parseResult = schema.safeParse(cur_line);
+      if (parseResult.success) {
+        result.push(parseResult.data);
+      } 
+    } else {
+      result.push(cur_line);
+    }
   }
+
   return result
 }
