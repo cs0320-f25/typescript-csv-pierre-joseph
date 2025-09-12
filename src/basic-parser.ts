@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as readline from "readline";
-import { z, ZodType } from "zod";
+import { ZodType } from "zod";
 
 interface SchemaError {
-  error: "rowSchemaError"
+  error: "Schema Row Mismatch"
   row: string 
 }
 
@@ -23,7 +23,7 @@ interface SchemaError {
  * The function accepts a Zod Schema defining the necessary structure
  * of a CSV row
  */
-export async function parseCSV<T>(path: string, schema: ZodType<T> | undefined): Promise<(T | string[])[]> {
+export async function parseCSV<T>(path: string, schema?: ZodType<T> | undefined): Promise<T[] | string[][] | SchemaError[]> {
   // This initial block of code reads from a file in Node.js. The "rl"
   // value can be iterated over in a "for" loop. 
   const fileStream = fs.createReadStream(path);
@@ -38,19 +38,30 @@ export async function parseCSV<T>(path: string, schema: ZodType<T> | undefined):
   // We add the "await" here because file I/O is asynchronous. 
   // We need to force TypeScript to _wait_ for a row before moving on. 
   // More on this in class soon!
-  for await (const line of rl) {
-    const cur_line = line.split(",").map((v) => v.trim());
-
-    // If a schema was provided, validate the current line against it.
-    if (schema) {
+  if (schema) {
+    let errors: SchemaError[] = []
+    for await (const line of rl) {
+      const cur_line = line.split(",").map((v) => v.trim());
       const parseResult = schema.safeParse(cur_line);
-      if (parseResult.success) {
-        result.push(parseResult.data);
-      } 
+        if (parseResult.success) {
+          result.push(parseResult.data);
+        } else {
+          errors.push({ error: "Schema Row Mismatch", row: line })
+        }
+    }
+
+    if (errors.length > 0) {
+      return errors
     } else {
+      return result
+    }
+    
+  } else {
+    for await (const line of rl) {
+      const cur_line = line.split(",").map((v) => v.trim());
       result.push(cur_line);
     }
-  }
 
-  return result
+    return result
+  }
 }
