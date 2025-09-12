@@ -8,6 +8,7 @@ const IVYS_CSV_PATH = path.join(__dirname, "../data/ivys.csv");
 const IPHONES_CSV_PATH = path.join(__dirname, "../data/iphones.csv");
 const EMPTY_CSV_PATH = path.join(__dirname, "../data/empty.csv");
 const NODATA_CSV_PATH = path.join(__dirname, "../data/nodata.csv");
+const NEWLINE_CSV_PATH = path.join(__dirname, "../data/newline.csv");
 
 test("parseCSV yields arrays", async () => {
   const results = await parseCSV(PEOPLE_CSV_PATH)
@@ -71,6 +72,14 @@ test("parseCSV with missing last value", async () => {
 test("parseCSV with extra last value", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[9]).toEqual(["klay", "11", "L.A.", "klay@gmail.com"]); // row has extra email, fails
+});
+
+test("parseCSV with csv data containing newline", async () => {
+  const results = await parseCSV(NEWLINE_CSV_PATH)
+  expect(results).toHaveLength(3);
+  expect(results[0]).toEqual(["I am just a boy", "5"]); 
+  expect(results[1]).toEqual(["Hello World", "2"]); 
+  expect(results[2]).toEqual(["This goes onto \na newline", "2"]); // row goes onto a new line, fails
 });
 
 // Testing csv parsing with schema
