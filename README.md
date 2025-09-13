@@ -28,7 +28,7 @@ For my first prompt, I asked chatgpt about what specific improvements and featur
     
 ### Design Choices
 
-Whenever someone provided a csv file which did now meet the specified Zod Schema specification, I decided to return a list of errors (with custom SchemaError interface), containing an error for every row in the csv file which did not meet the Schema. I decided to do this so that the caller knows everywhere their csv file fails their desired specification, so they can do something about it. 
+Whenever someone provided a csv file which did now meet the specified Zod Schema specification, I decided to return a list of errors (with custom SchemaError interface), containing a list of errors for every row in the csv file which did not meet the Schema. I decided to do this so that the caller knows everywhere their csv file fails their desired specification, so they can do something about it. 
 
 ### 1340 Supplement
 
@@ -64,6 +64,8 @@ Overall, I think that testing went quite well and I was able to test both the su
 #### Team members and contributions (include cs logins):
 
 #### Collaborators (cslogins of anyone you worked with on this project and/or generative AI): 
+cslogins: zplunket
+
 Used Chatgpt to ask and come up with possible enhancements for my csv parser during part B
 https://chatgpt.com/share/68c4ea4c-3e60-800e-940f-2a4fff7ae5f3
 https://chatgpt.com/share/68c4ec22-3b54-800e-827d-d6ec2bd1821f 
@@ -72,3 +74,4 @@ https://chatgpt.com/share/68c4ec22-3b54-800e-827d-d6ec2bd1821f
 6 hours
 
 #### Link to GitHub Repo:  
+https://github.com/cs0320-f25/typescript-csv-pierre-joseph 
