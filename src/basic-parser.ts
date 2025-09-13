@@ -3,8 +3,9 @@ import * as readline from "readline";
 import { ZodType } from "zod";
 
 interface SchemaError {
-  error: "Schema Row Mismatch"
+  error: "Schema Validation Failure"
   row: string 
+  messages: string[]
 }
 
 /**
@@ -46,7 +47,9 @@ export async function parseCSV<T>(path: string, schema?: ZodType<T> | undefined)
         if (parseResult.success) {
           result.push(parseResult.data);
         } else {
-          errors.push({ error: "Schema Row Mismatch", row: line })
+          console.log(parseResult.error.issues)
+          const allMessages = parseResult.error.issues.map(err => "Col; "  + err.path[0].toString() + ", " + err.message);
+          errors.push({ error: "Schema Validation Failure", row: line, messages: allMessages });
         }
     }
 

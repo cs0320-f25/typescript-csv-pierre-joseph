@@ -105,8 +105,14 @@ const PersonRowSchema = z.tuple([z.string(), z.coerce.number()])
 test("parseCSV with zod on not valid people csv", async () => {
   const peopleResults = await parseCSV(PEOPLE_CSV_PATH, PersonRowSchema)
   expect(peopleResults).toHaveLength(2);
-  expect(peopleResults[0]).toEqual({ error: "Schema Row Mismatch", row: "name,age" });
-  expect(peopleResults[1]).toEqual({error: "Schema Row Mismatch", row: "Bob,thirty"});
+  expect(peopleResults[0]).toEqual({
+    error: "Schema Validation Failure", row: "name,age",
+    messages: ["Col: 1, Invalid input: expected number, received NaN"]
+  });
+  expect(peopleResults[1]).toEqual({
+    error: "Schema Validation Failure", row: "Bob,thirty",
+    messages: ["Col: 1, Invalid input: expected number, received NaN"]
+  });
 });
 
 
@@ -116,7 +122,13 @@ const IphoneRowSchema = z.tuple([z.string(), z.coerce.number(), z.coerce.number(
 test("parseCSV with zod on not valid iPhone csv", async () => {
   const iphoneResults = await parseCSV(IPHONES_CSV_PATH, IphoneRowSchema)
   expect(iphoneResults).toHaveLength(2);
-  expect(iphoneResults[0]).toEqual({ error: "Schema Row Mismatch", row: "iPhone 15, 799" });
-  expect(iphoneResults[1]).toEqual({error: "Schema Row Mismatch", row: "iPhone X, 2017, nine hundred ninety nine"});
+  expect(iphoneResults[0]).toEqual({
+    error: "Schema Validation Failure", row: "iPhone 15, 799",
+    messages: ["Col: 2; Invalid input: expected number, received NaN"]
+  });
+  expect(iphoneResults[1]).toEqual({
+    error: "Schema Validation Failure", row: "iPhone X, 2017, nine hundred ninety nine",
+    messages: ["Col: 2; Invalid input: expected number, received NaN"]
+  });
 });
 
