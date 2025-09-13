@@ -56,7 +56,7 @@ test("parseCSV with comma in data", async () => {
 
 test("parseCSV when putting num in double quotes", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
-  expect(playerResults[5]).toEqual(["Jordan", "23", "North Carolina", "micheal_jordan@yahoo.com"]); // number in quotes, fails
+  expect(playerResults[5]).toEqual(["Jordan", "23", "North Carolina", "micheal-jordan@yahoo.com"]); // number in quotes, fails
 });
 
 test("parseCSV when putting string in double quotes", async () => {
@@ -107,11 +107,11 @@ test("parseCSV with zod on not valid people csv", async () => {
   expect(peopleResults).toHaveLength(2);
   expect(peopleResults[0]).toEqual({
     error: "Schema Validation Failure", row: "name,age",
-    messages: ["Col: 1; Invalid input: expected number, received NaN"]
+    messages: ["Invalid input: expected number, received NaN"]
   });
   expect(peopleResults[1]).toEqual({
     error: "Schema Validation Failure", row: "Bob,thirty",
-    messages: ["Col: 1; Invalid input: expected number, received NaN"]
+    messages: ["Invalid input: expected number, received NaN"]
   });
 });
 
@@ -124,12 +124,47 @@ test("parseCSV with zod on not valid iPhone csv", async () => {
   expect(iphoneResults).toHaveLength(2);
   expect(iphoneResults[0]).toEqual({
     error: "Schema Validation Failure", row: "iPhone 15, 799",
-    messages: ["Col: 2; Invalid input: expected number, received NaN"]
+    messages: ["Invalid input: expected number, received NaN"]
   });
   expect(iphoneResults[1]).toEqual({
     error: "Schema Validation Failure", row: "iPhone X, 2017, nine hundred ninety nine",
-    messages: ["Col: 2; Invalid input: expected number, received NaN"]
+    messages: ["Invalid input: expected number, received NaN"]
   });
 });
 
+const PlayerSchema = z.tuple([z.string(), z.coerce.number(), z.string(), z.email()])
+                         .transform( tup => ({name: tup[0], number: tup[1], placeOfBirth: tup[2], email: tup[3]}) );
+
+test("parseCSV with zod on not valid basketball player csv", async () => {
+  const playerResults = await parseCSV(PLAYERS_CSV_PATH, PlayerSchema)
+  expect(playerResults).toHaveLength(7);
+  expect(playerResults[0]).toEqual({
+    error: "Schema Validation Failure", row: "Name, Number, Place of Birth, Email",
+    messages: ["Invalid input: expected number, received NaN", "Invalid email address"]
+  });
+  expect(playerResults[1]).toEqual({
+    error: "Schema Validation Failure", row: "Curry, 30, \"Akron, Ohio\", stephcurry@gmail.com",
+    messages: ["Too big: expected array to have <4 items"]
+  });
+  expect(playerResults[2]).toEqual({
+    error: "Schema Validation Failure", row: "LeBron, 23, Ohio, notavalidemailbron",
+    messages: ["Invalid email address"]
+  });
+  expect(playerResults[3]).toEqual({
+    error: "Schema Validation Failure", row: "Jordan, \"23\", North Carolina, micheal-jordan@yahoo.com",
+    messages: ["Invalid input: expected number, received NaN"]
+  });
+  expect(playerResults[4]).toEqual({
+    error: "Schema Validation Failure", row: "Jayson Tatum, zero, St. Louis, jaysontatum@gmail.com",
+    messages: ["Invalid input: expected number, received NaN"]
+  });
+  expect(playerResults[5]).toEqual({
+    error: "Schema Validation Failure", row: "klay, 11, L.A.",
+    messages: ["Invalid input: expected string, received undefined"]
+  });
+  expect(playerResults[6]).toEqual({
+    error: "Schema Validation Failure", row: "klay, 11, L.A., klay@gmail.com, thompson@gmail.com",
+    messages: ["Too big: expected array to have <4 items"]
+  });
+});
 
