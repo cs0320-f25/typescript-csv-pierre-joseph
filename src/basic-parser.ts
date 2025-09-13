@@ -21,7 +21,7 @@ interface SchemaError {
  * @returns a "promise" to produce a 2-d array of cell values
  * 
  * The function accepts a Zod Schema defining the necessary structure
- * of a CSV row
+ * of a CSV row (undefined if not given as a parameter)
  */
 export async function parseCSV<T>(path: string, schema?: ZodType<T> | undefined): Promise<T[] | string[][] | SchemaError[]> {
   // This initial block of code reads from a file in Node.js. The "rl"

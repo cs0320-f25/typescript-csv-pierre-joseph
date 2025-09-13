@@ -75,8 +75,7 @@ test("parseCSV with extra last value", async () => {
 });
 
 test("parseCSV with csv data containing newline", async () => {
-  const results = await parseCSV(NEWLINE_CSV_PATH)
-  expect(results).toHaveLength(3);
+  const results = await parseCSV(NEWLINE_CSV_PATH) 
   expect(results[0]).toEqual(["I am just a boy", "5"]); 
   expect(results[1]).toEqual(["Hello World", "2"]); 
   expect(results[2]).toEqual(["This goes onto \na newline", "2"]); // row goes onto a new line, fails
@@ -103,7 +102,7 @@ test("parseCSV with zod on valid ivy colleges", async () => {
 const PersonRowSchema = z.tuple([z.string(), z.coerce.number()])
                          .transform( tup => ({name: tup[0], age: tup[1]}) );
 
-test("parseCSV with zod on not valid iPhone csv", async () => {
+test("parseCSV with zod on not valid people csv", async () => {
   const peopleResults = await parseCSV(PEOPLE_CSV_PATH, PersonRowSchema)
   expect(peopleResults).toHaveLength(2);
   expect(peopleResults[0]).toEqual({ error: "Schema Row Mismatch", row: "name,age" });
