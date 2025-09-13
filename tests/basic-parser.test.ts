@@ -107,11 +107,11 @@ test("parseCSV with zod on not valid people csv", async () => {
   expect(peopleResults).toHaveLength(2);
   expect(peopleResults[0]).toEqual({
     error: "Schema Validation Failure", row: "name,age",
-    messages: ["Col: 1, Invalid input: expected number, received NaN"]
+    messages: ["Col: 1; Invalid input: expected number, received NaN"]
   });
   expect(peopleResults[1]).toEqual({
     error: "Schema Validation Failure", row: "Bob,thirty",
-    messages: ["Col: 1, Invalid input: expected number, received NaN"]
+    messages: ["Col: 1; Invalid input: expected number, received NaN"]
   });
 });
 

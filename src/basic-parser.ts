@@ -48,7 +48,7 @@ export async function parseCSV<T>(path: string, schema?: ZodType<T> | undefined)
           result.push(parseResult.data);
         } else {
           console.log(parseResult.error.issues)
-          const allMessages = parseResult.error.issues.map(err => "Col; "  + err.path[0].toString() + ", " + err.message);
+          const allMessages = parseResult.error.issues.map(err => "Col: "  + err.path[0].toString() + "; " + err.message);
           errors.push({ error: "Schema Validation Failure", row: line, messages: allMessages });
         }
     }
