@@ -49,17 +49,17 @@ test("parseCSV with file with no data", async () => {
   expect(noData[0]).toEqual(["", "", "", "", ""]); // row just contains no data
 });
 
-test("parseCSV with comma", async () => {
+test("parseCSV with comma in data", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[3]).toEqual(["Curry", "30", "Akron, Ohio", "stephcurry@gmail.com"]); // comma in place of birth, fails
 });
 
-test("parseCSV when making num a string", async () => {
+test("parseCSV when putting num in double quotes", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
-  expect(playerResults[5]).toEqual(["Jordan", "23", "North Carolina", "micheal_jordan@yahoo.com"]); // number as string, fails
+  expect(playerResults[5]).toEqual(["Jordan", "23", "North Carolina", "micheal_jordan@yahoo.com"]); // number in quotes, fails
 });
 
-test("parseCSV when putting name in string", async () => {
+test("parseCSV when putting string in double quotes", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
   expect(playerResults[8]).toEqual(["easymoneysniper", "35", "D.C.", "kd@gmail.com"]); // name in quotes, fails
 });
@@ -71,7 +71,7 @@ test("parseCSV with missing last value", async () => {
 
 test("parseCSV with extra last value", async () => {
   const playerResults = await parseCSV(PLAYERS_CSV_PATH)
-  expect(playerResults[9]).toEqual(["klay", "11", "L.A.", "klay@gmail.com"]); // row has extra email, fails
+  expect(playerResults[9]).toEqual(["klay", "11", "L.A.", "klay@gmail.com"]); // row has extra email, fails (should be cut off/error)
 });
 
 test("parseCSV with csv data containing newline", async () => {
@@ -131,4 +131,5 @@ test("parseCSV with zod on not valid iPhone csv", async () => {
     messages: ["Col: 2; Invalid input: expected number, received NaN"]
   });
 });
+
 

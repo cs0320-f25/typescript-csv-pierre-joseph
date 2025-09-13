@@ -33,26 +33,25 @@ export async function parseCSV<T>(path: string, schema?: ZodType<T> | undefined)
     crlfDelay: Infinity, // handle different line endings
   });
   
-  // Create an empty array to hold the results
-  let result = []
-  
-  // We add the "await" here because file I/O is asynchronous. 
-  // We need to force TypeScript to _wait_ for a row before moving on. 
-  // More on this in class soon!
   if (schema) {
+     // Create an empty array to hold the results
+    let result: T[] = []
+
+    // Create an empty array to hold the errors, if there are any
     let errors: SchemaError[] = []
+
     for await (const line of rl) {
       const cur_line = line.split(",").map((v) => v.trim());
       const parseResult = schema.safeParse(cur_line);
         if (parseResult.success) {
           result.push(parseResult.data);
         } else {
-          console.log(parseResult.error.issues)
           const allMessages = parseResult.error.issues.map(err => "Col: "  + err.path[0].toString() + "; " + err.message);
           errors.push({ error: "Schema Validation Failure", row: line, messages: allMessages });
         }
     }
 
+    // If there are any errors, return errors
     if (errors.length > 0) {
       return errors
     } else {
@@ -60,6 +59,8 @@ export async function parseCSV<T>(path: string, schema?: ZodType<T> | undefined)
     }
     
   } else {
+    let result: string[][] = []
+
     for await (const line of rl) {
       const cur_line = line.split(",").map((v) => v.trim());
       result.push(cur_line);
